@@ -9,9 +9,11 @@ import org.vu.contest.ContestEvaluation;
 
 import java.util.Random;
 import java.util.Properties;
+import java.util.Vector;
 
 public class GA implements ContestSubmission
 {
+
     Random rnd_;
     ContestEvaluation evaluation_;
     private int evaluations_limit_;
@@ -55,9 +57,11 @@ public class GA implements ContestSubmission
         // Run your algorithm here
 
         int evals = 0;
+        System.out.println(evals);
         // init population
         // calculate fitness
         while(evals<evaluations_limit_){
+
             // Select parents
             // Apply crossover / mutation operators
             double child[] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
