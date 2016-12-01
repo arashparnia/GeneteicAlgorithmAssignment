@@ -5,15 +5,15 @@ public class Main {
     public static void main(String[] args) {
 	// write your code here
         GA g= new GA();
-        ContestEvaluation eval = new SphereEvaluation();
+//        ContestEvaluation eval = new FletcherPowellEvaluation();
+        ContestEvaluation eval = new RastriginEvaluation();
         g.setEvaluation(eval);
-//        g.run();
+        g.run();
 
-        Genome gg = new Genome(0,0.1,0.01);
-        for (int i = 0 ; i <10 ; i ++ ) {
-            gg.mutate();
-            System.out.println(gg.toString());
-        }
+
+
+//        Population p = new Population(10,0.5,0.5);
+//        System.out.println(p.toString());
 
     }
 }

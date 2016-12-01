@@ -1,15 +1,17 @@
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 /**
  * Created by arashparnia on 01/12/2016.
  */
-public class Genome {
-    private static final int SIZE = 10;
-    private double[] genome = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    private double fitness;
-    private double mutation_rate = 0;
-    private double mutation_pobability = 0;
+public class Genome implements Comparable<Genome> , GAParam{
+    private static final int genome_size = GAParam.genome_size;
+    private double[] genome = GAParam.genome;
+    private double fitness  = GAParam.fitness;
+    private int age = GAParam.age;
+    private double mutation_rate = GAParam.mutation_rate;
+    private double mutation_pobability_genome = GAParam.mutation_pobability_genome;
 
 
 
@@ -22,8 +24,15 @@ public class Genome {
     public Genome(double fitness, double mutation_rate, double mutation_pobability) {
         this.fitness = fitness;
         this.mutation_rate = mutation_rate;
-        this.mutation_pobability = mutation_pobability;
+        this.mutation_pobability_genome = mutation_pobability;
     }
+    public Genome(double fitness, double mutation_rate, double mutation_pobability, boolean mutate) {
+        this.fitness = fitness;
+        this.mutation_rate = mutation_rate;
+        this.mutation_pobability_genome = mutation_pobability;
+        if (mutate) mutate();
+    }
+
     //clone constructor
     public Genome(Genome g) {
         this.setGenome(g.getGenome());
@@ -60,11 +69,11 @@ public class Genome {
     }
 
     public double getMutationr_pobability() {
-        return mutation_pobability;
+        return mutation_pobability_genome;
     }
 
-    public void setMutationr_pobability(double mutationr_pobability) {
-        this.mutation_pobability = mutationr_pobability;
+    public void setMutationr_pobability(double mutationr_pobability_genome) {
+        this.mutation_pobability_genome = mutationr_pobability_genome;
     }
 
     public double getFitness() {
@@ -72,19 +81,30 @@ public class Genome {
     }
 
     public void setFitness(double fitness) {
+        setAge(getAge()+1);
         this.fitness = fitness;
     }
 
-    public void mutate(){
+    public int getAge() {
+        return age;
+    }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void mutate(){
         Random rand = new Random();
 
         for (int index = 0 ; index <10 ; index++) {
             double probibility = Math.abs (rand.nextDouble());
-            if (mutation_pobability > probibility) {
+            if (mutation_pobability_genome > probibility) {
                 double random_mutation_value = rand.nextDouble();
                 double actual_mutation_value =  random_mutation_value *  (mutation_rate);
-                this.setGene(index, this.getGene(index)  +actual_mutation_value);
+                if (rand.nextBoolean())
+                    this.setGene(index, this.getGene(index)  + actual_mutation_value);
+                else
+                    this.setGene(index, this.getGene(index)  - actual_mutation_value);
             }
         }
    }
@@ -98,7 +118,12 @@ public class Genome {
                 "genome=" + Arrays.toString(genome) +
                 ", fitness=" + fitness +
                 ", mutation_rate=" + mutation_rate +
-                ", mutation_pobability=" + mutation_pobability +
+                ", mutation_pobability=" + mutation_pobability_genome +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Genome o) {
+        return Double.compare(o.getFitness(),this.getFitness()) ;
     }
 }
