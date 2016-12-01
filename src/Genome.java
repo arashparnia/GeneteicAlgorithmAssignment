@@ -13,6 +13,7 @@ public class Genome {
 
 
 
+
     //default constructor
     public Genome() {
 
@@ -24,8 +25,11 @@ public class Genome {
         this.mutation_pobability = mutation_pobability;
     }
     //clone constructor
-    public Genome(double[] genome) {
-        this.genome = genome;
+    public Genome(Genome g) {
+        this.setGenome(g.getGenome());
+        this.setFitness(g.getFitness());
+        this.setMutationRate( g.getMutationRate());
+        this.setMutationr_pobability(g.getMutationr_pobability());
     }
 
 
@@ -39,7 +43,13 @@ public class Genome {
         this.genome = genome;
     }
 
+    public double getGene(int index) {
+        return genome[index];
+    }
 
+    public void setGene(int index,double gene) {
+        this.genome[index] = gene;
+    }
 
     public double getMutationRate() {
         return mutation_rate;
@@ -80,14 +90,7 @@ public class Genome {
    }
 
 
-   // private  methods
-    private double getGene(int index) {
-        return genome[index];
-    }
 
-    private void setGene(int index,double gene) {
-        this.genome[index] = gene;
-    }
 
     @Override
     public String toString() {
