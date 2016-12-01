@@ -4,13 +4,11 @@
 
 
 
-import com.sun.org.apache.bcel.internal.generic.POP;
 import org.vu.contest.ContestSubmission;
 import org.vu.contest.ContestEvaluation;
 
 import java.util.Random;
 import java.util.Properties;
-import java.util.Vector;
 
 public class GA implements ContestSubmission
 {
@@ -69,20 +67,27 @@ public class GA implements ContestSubmission
 
             pop.mutate();
 
-            for (Genome g : pop.getPopulation()){
+            for (Genome g : pop.getPopulation_vector()){
                 evals++;
 //                System.out.print(g.getGene(0));
                 System.arraycopy(g.getGenome(),0,candidate,0,10);
                 Double fittness = (double) evaluation_.evaluate(candidate);
                 g.setFitness(fittness);
+
                 if (fittness > highestFittness) {
                     highestFittness = fittness;
                     System.arraycopy(g.getGenome(),0,champion,0,10);
                 }
+                System.out.println("population evaluated with fittness :  " + fittness + " with highest fittness at "+highestFittness );
             }
-            System.out.println("population evaluated with fittness :  " + highestFittness );
-            System.out.println("Champion :  " + champion.toString());
+//
             pop.selection_tournament();
+//            System.out.println("population evaluated with fittness :  " + highestFittness );
+//            System.out.print("Champion :  " );
+//            for (int i =0;i <10 ; i++){
+//                System.out.print(candidate[i]+",");
+//            }
+//            System.out.println();
 
 
             // Select parents

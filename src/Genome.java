@@ -124,6 +124,6 @@ public class Genome implements Comparable<Genome> , GAParam{
 
     @Override
     public int compareTo(Genome o) {
-        return Double.compare(o.getFitness(),this.getFitness()) ;
+        return Double.compare(this.getFitness(),o.getFitness()) ;
     }
 }
