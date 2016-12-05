@@ -47,7 +47,7 @@ public class SphereEvaluation implements ContestEvaluation
 	@Override
 	public Object evaluate(Object result) 
 	{
-		System.out.print(".");
+//		System.out.print(".");
 		// Check argument
 		if(!(result instanceof double[])) throw new IllegalArgumentException();
 		double ind[] = (double[]) result;

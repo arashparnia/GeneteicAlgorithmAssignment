@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 /**
@@ -9,9 +8,9 @@ public class Genome implements Comparable<Genome> , GAParam{
     private static final int genome_size = GAParam.genome_size;
     private double[] genome = GAParam.genome;
     private double fitness  = GAParam.fitness;
-    private int age = GAParam.age;
     private double mutation_rate = GAParam.mutation_rate;
-    private double mutation_pobability_genome = GAParam.mutation_pobability_genome;
+    private double mutation_probability_genome = GAParam.mutation_probability_genome;
+    private boolean evaluated = false;
 
 
 
@@ -21,15 +20,15 @@ public class Genome implements Comparable<Genome> , GAParam{
 
     }
 
-    public Genome(double fitness, double mutation_rate, double mutation_pobability) {
+    public Genome(double fitness, double mutation_rate, double mutation_probability) {
         this.fitness = fitness;
         this.mutation_rate = mutation_rate;
-        this.mutation_pobability_genome = mutation_pobability;
+        this.mutation_probability_genome = mutation_probability;
     }
-    public Genome(double fitness, double mutation_rate, double mutation_pobability, boolean mutate) {
+    public Genome(double fitness, double mutation_rate, double mutation_probability, boolean mutate) {
         this.fitness = fitness;
         this.mutation_rate = mutation_rate;
-        this.mutation_pobability_genome = mutation_pobability;
+        this.mutation_probability_genome = mutation_probability;
         if (mutate) mutate();
     }
 
@@ -69,11 +68,11 @@ public class Genome implements Comparable<Genome> , GAParam{
     }
 
     public double getMutationr_pobability() {
-        return mutation_pobability_genome;
+        return mutation_probability_genome;
     }
 
-    public void setMutationr_pobability(double mutationr_pobability_genome) {
-        this.mutation_pobability_genome = mutationr_pobability_genome;
+    public void setMutationr_pobability(double mutation_pobability_genome) {
+        this.mutation_probability_genome = mutation_pobability_genome;
     }
 
     public double getFitness() {
@@ -81,30 +80,27 @@ public class Genome implements Comparable<Genome> , GAParam{
     }
 
     public void setFitness(double fitness) {
-        setAge(getAge()+1);
+
         this.fitness = fitness;
     }
 
-    public int getAge() {
-        return age;
+
+    public boolean isEvaluated() {
+        return evaluated;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setEvaluated(boolean evaluated) {
+        this.evaluated = evaluated;
     }
 
     public void mutate(){
         Random rand = new Random();
 
-        for (int index = 0 ; index <10 ; index++) {
-            double probibility = Math.abs (rand.nextDouble());
-            if (mutation_pobability_genome > probibility) {
-                double random_mutation_value = rand.nextDouble();
-                double actual_mutation_value =  random_mutation_value *  (mutation_rate);
-                if (rand.nextBoolean())
-                    this.setGene(index, this.getGene(index)  + actual_mutation_value);
-                else
-                    this.setGene(index, this.getGene(index)  - actual_mutation_value);
+        for (int index = 0 ; index <GAParam.genome_size ; index++) {
+            if (Math.abs(rand.nextDouble()) < mutation_probability_genome ) {
+                double actual_mutation_value =  rand.nextDouble() *  (mutation_rate);
+                this.setGene(index, this.getGene(index)  + actual_mutation_value);
+
             }
         }
    }
@@ -118,7 +114,7 @@ public class Genome implements Comparable<Genome> , GAParam{
                 "genome=" + Arrays.toString(genome) +
                 ", fitness=" + fitness +
                 ", mutation_rate=" + mutation_rate +
-                ", mutation_pobability=" + mutation_pobability_genome +
+                ", mutation_pobability=" + mutation_probability_genome +
                 '}';
     }
 

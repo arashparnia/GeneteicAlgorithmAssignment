@@ -4,11 +4,13 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
-        GA g= new GA();
+        player1 g= new player1();
+        g.setSeed((long) 0x1.2c91e9f5p32);
         ContestEvaluation eval = new FletcherPowellEvaluation();
 //        ContestEvaluation eval = new RastriginEvaluation();
 //        ContestEvaluation eval = new SphereEvaluation();
         g.setEvaluation(eval);
+
         g.run();
 
 
