@@ -159,8 +159,8 @@ public class Population implements GAParam{
         }
 
         for (int i = 0 ; i < top;i++) {
-            population_vector.setElementAt(children.get(i),i);
-//            population_vector.addElement(children.get(i));
+//            population_vector.setElementAt(children.get(i),i);
+            population_vector.addElement(children.get(i));
         }
 
 //        for (int i = 0 ; i < children.size();i++) {
@@ -168,6 +168,14 @@ public class Population implements GAParam{
 
     }
 
+    public void select_survivors(){
+        double t = get_champion().getFitness() * survival_threshold;
+        for (int i = 0 ; i < population_size ; i++){
+            if (population_vector.get(i).getFitness() < t) {
+                population_vector.remove(i);
+            }
+        }
+    }
 
     public Genome get_champion(){
         Genome champ = new Genome(-999999,0,0);

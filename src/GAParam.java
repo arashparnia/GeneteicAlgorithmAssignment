@@ -11,6 +11,7 @@ public interface GAParam {
     double mutation_rate = 0.5;
     double mutation_probability_genome = 0.2;
     double mutation_probability_population = 0.5;
+    double survival_threshold = 1.5;
 
 
 }
