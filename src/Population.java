@@ -1,5 +1,6 @@
-import java.util.Collections;
-import java.util.Random;
+import com.sun.tools.javac.jvm.Gen;
+
+import java.util.Iterator;
 import java.util.Vector;
 
 import static oracle.jrockit.jfr.events.Bits.intValue;
@@ -8,30 +9,34 @@ import static oracle.jrockit.jfr.events.Bits.intValue;
  * Created by arashparnia on 01/12/2016.
  */
 public class Population implements GAParam{
-    private Vector<Genome> population_vector = new Vector<Genome>();
+    private Vector<Genome> population_vector = new Vector<>(GAParam.population_size);
     private int population_size = 0;
     private double crossover_uniform_probibility = GAParam.crossover_uniform_probability;
-    private double tournoment_winner_percentage = GAParam.tournament_winner_percentage;
+    private double tournament_size = GAParam.tournament_size;
     private double mutation_pobability_population = GAParam.mutation_probability_population;
+
 
 
     //CONSTRUCTORS
     public Population() {
         for (int i = 0; i < GAParam.population_size; i++){
-            population_vector.add(new Genome(-999999, mutation_rate, mutation_pobability_population,true));
+            population_vector.add(new Genome(GAParam.fitness, mutation_rate, mutation_pobability_population,true));
+//            System.out.println(population_vector.get(i).toString());
+
             this.population_size++;
         }
+
     }
 
-
     public Population(Vector<Genome> population) {
-        this.population_vector = population;
+
+        this.population_vector = (Vector<Genome>) population.clone();
     }
 
     //spawn Population with population_size
     public Population(int population_size, double mutation_rate, double mutation_probibility_genome){
         for (int i = 0; i < population_size; i++){
-            population_vector.add(new Genome(-999999, mutation_rate, mutation_probibility_genome,true));
+            population_vector.add(new Genome(GAParam.fitness, mutation_rate, mutation_probibility_genome,true));
             this.population_size++;
         }
     }
@@ -50,59 +55,43 @@ public class Population implements GAParam{
 
 
 
-    //SETTER AND GETTERS
 
-    public Vector<Genome> getPopulation_vector() {
-        return population_vector;
+    // GA methods
+    public Vector<Genome> crossover(Vector<Genome> pop){
+        Vector<Genome> offspring = new Vector<Genome>();
+         for ( int i  = 0; i < pop.size();i += 2){
+            Genome parent1 = pop.elementAt(i);
+            Genome parent2 = pop.elementAt(i+1);
+
+//            Genome[] children  = crossover_single_point(parent1,parent2);
+            Genome[] children  = crossover_uniform(parent1,parent2);
+
+            offspring.add(children[0]);
+            offspring.add(children[1]);
+        }
+        return offspring;
     }
 
-    public void setPopulation_vector(Vector<Genome> population_vector) {
-        this.population_vector = population_vector;
-    }
-
-    public double getCrossover_uniform_probibility() {
-        return crossover_uniform_probibility;
-    }
-
-    public void setCrossover_uniform_probibility(double crossover_uniform_probibility) {
-        this.crossover_uniform_probibility = crossover_uniform_probibility;
-    }
-    public double getTournoment_winner_percentage() {
-        return tournoment_winner_percentage;
-    }
-
-    public void setTournoment_winner_percentage(double tournoment_winner_percentage) {
-        this.tournoment_winner_percentage = tournoment_winner_percentage;
-    }
-
-    public int getPopulation_size() {
-        return population_vector.size();
-    }
-
-
-
-    public void mutate(){
-        Random rand = new Random();
-        for (Genome g : population_vector){
-            if (rand.nextDouble() < mutation_pobability_population) {
+    public Vector<Genome> mutate(Vector<Genome> pop){
+        for (Genome g : pop){
+            if (Math.abs(rnd_.nextDouble()) < mutation_pobability_population) {
                 g.mutate();
-                g.setEvaluated(false);
             }
         }
+        return  pop;
     }
 
     public Genome[] crossover_uniform(Genome parent1 , Genome parent2){
-        Random rand = new Random();
         double mutation_rate;
         double mutation_probability;
-        if (rand.nextBoolean()) mutation_rate = parent1.getMutationRate(); else mutation_rate = parent2.getMutationRate();
-        if (rand.nextBoolean()) mutation_probability = parent1.getMutationr_pobability(); else mutation_probability = parent2.getMutationr_pobability();
-        Genome child1 = new Genome(-999999,mutation_rate,mutation_probability);
-        Genome child2 = new Genome(-999999,mutation_rate,mutation_probability);
+        if (rnd_.nextBoolean()) mutation_rate = parent1.getMutationRate(); else mutation_rate = parent2.getMutationRate();
+        if (rnd_.nextBoolean()) mutation_probability = parent1.getMutationr_pobability(); else mutation_probability = parent2.getMutationr_pobability();
+        Genome child1 = new Genome(GAParam.fitness,mutation_rate,mutation_probability);
+        Genome child2 = new Genome(GAParam.fitness,mutation_rate,mutation_probability);
 
         for (int i = 0 ; i <GAParam.genome_size ; i++){
-            if (rand.nextDouble() < crossover_uniform_probibility){
-                if (rand.nextBoolean()) {
+            if (Math.abs(rnd_.nextDouble()) < crossover_uniform_probibility){
+                if (rnd_.nextBoolean()) {
                     child1.setGene(i,parent1.getGene(i));
                     child2.setGene(i,parent2.getGene(i));
                 }
@@ -117,77 +106,76 @@ public class Population implements GAParam{
         return children;
     }
 
-    public Genome crossover_single_point(Genome parent1 , Genome parent2){
-        Random rand = new Random();
+    public Genome[] crossover_single_point(Genome parent1 , Genome parent2){
         double mutation_rate;
         double mutation_probability;
-        if (rand.nextBoolean()) mutation_rate = parent1.getMutationRate(); else mutation_rate = parent2.getMutationRate();
-        if (rand.nextBoolean()) mutation_probability = parent1.getMutationr_pobability(); else mutation_probability = parent2.getMutationr_pobability();
-        Genome child = new Genome(-999999,mutation_rate,mutation_probability);
-
-        int crossing_point = rand.nextInt(10);
+        if (rnd_.nextBoolean()) mutation_rate = parent1.getMutationRate(); else mutation_rate = parent2.getMutationRate();
+        if (rnd_.nextBoolean()) mutation_probability = parent1.getMutationr_pobability(); else mutation_probability = parent2.getMutationr_pobability();
+        Genome child1 = new Genome(GAParam.fitness,mutation_rate,mutation_probability);
+        Genome child2 = new Genome(GAParam.fitness,mutation_rate,mutation_probability);
+        int crossing_point = Math.abs(rnd_.nextInt(GAParam.genome_size));
 
         for (int i = 0 ; i <10 ; i++){
-                if (i < crossing_point) child.setGene(i,parent1.getGene(i)); else child.setGene(i,parent2.getGene(i));
+                if (i < crossing_point) {
+                    child1.setGene(i,parent1.getGene(i));
+                    child2.setGene(i,parent2.getGene(i));
+                }
+                else {
+                    child1.setGene(i,parent2.getGene(i));
+                    child2.setGene(i,parent2.getGene(i));
+                }
         }
-        return child;
+        Genome[] children =  {child1,child2};
+        return children;
     }
 
 
-    public void selection_tournament(){
-        //tournament selection
-        Collections.sort(population_vector);
+    public Vector<Genome> selection_tournament(Vector<Genome> population_vector,boolean elitism) {
+        int selection_size = 0;
 
-        int c = 1;
-        for (Genome ggg : population_vector){
-
-            System.out.println(c + "     " +ggg.getFitness());
-            c++;
-        }
+        Vector<Genome> offspring = new Vector<Genome>();
 
 
-        int top = intValue (population_size * tournoment_winner_percentage);
+        double sum = 0;
+            Genome the_elite = new Genome();
+            for (Genome g : population_vector) {
+                sum += g.getFitness();
+                if (g.getFitness() > the_elite.getFitness()) the_elite = g;
 
-
-        Vector<Genome> children = new Vector<Genome>();
-
-
-        for (int i = population_size-1 ; i > population_size-top-1; i-=2){
-            Genome[] ch = crossover_uniform(population_vector.elementAt(i), population_vector.elementAt(i-1));
-            children.addElement(ch[0]);
-            children.addElement(ch[1]);
-        }
-
-        for (int i = 0 ; i < top;i++) {
-//            population_vector.setElementAt(children.get(i),i);
-            population_vector.addElement(children.get(i));
-        }
-
-//        for (int i = 0 ; i < children.size();i++) {
-//        }
-
-    }
-
-    public void select_survivors(){
-        double t = get_champion().getFitness() * survival_threshold;
-        for (int i = 0 ; i < population_size ; i++){
-            if (population_vector.get(i).getFitness() < t) {
-                population_vector.remove(i);
             }
+
+        if (elitism) {
+            offspring.add(new Genome(the_elite));
+            selection_size++;
         }
+
+
+        while (selection_size < population_size) {
+            
+            Vector<Genome> tournament_pool = new Vector<Genome>();
+
+            for (int i = 0; i < tournament_size; i++)
+                tournament_pool.add(select_random_genome(population_vector));
+
+            Genome tournaument_winner = new Genome();
+            for (Genome g : tournament_pool){
+                if (g.getFitness() > tournaument_winner.getFitness()) tournaument_winner = g;
+            }
+            offspring.add(tournaument_winner);
+            selection_size++;
+        }
+        return offspring;
+
     }
 
-    public Genome get_champion(){
-        Genome champ = new Genome(-999999,0,0);
-        for (Genome g: population_vector)
-        {
-            if (g.getFitness() > champ.getFitness()) {
-                champ.setGenome(g.getGenome());
-                champ.setFitness(g.getFitness());
-            }
-        }
-        return champ;
+
+    private Genome select_random_genome(Vector<Genome> population){
+            return population.elementAt(Math.abs(rnd_.nextInt(population_size)));
     }
+
+
+
+
 
 
     @Override
@@ -196,4 +184,60 @@ public class Population implements GAParam{
                 "Population=" + population_vector +
                 '}';
     }
+
+
+
+    //SETTER AND GETTERS
+
+    public Vector<Genome> getPopulation_vector() {
+
+        return (Vector<Genome>) population_vector.clone();
+    }
+
+    public void setPopulation_vector(Vector<Genome> population_vector) {
+
+        this.population_vector = population_vector;
+    }
+
+    public void setPopulation_array(Genome[] population){
+        this.population_vector.clear();
+        for (Genome g : population){
+            this.population_vector.add(g);
+        }
+    }
+    public Genome[] getPopulation_array(){
+       return population_vector.toArray(new Genome[population_size]);
+    }
+
+
+
+    public double getCrossover_uniform_probibility() {
+        return crossover_uniform_probibility;
+    }
+
+    public void setCrossover_uniform_probibility(double crossover_uniform_probibility) {
+        this.crossover_uniform_probibility = crossover_uniform_probibility;
+    }
+    public double getTournoment_winner_percentage() {
+        return tournament_size;
+    }
+
+    public void setTournoment_winner_percentage(double tournament_size) {
+        this.tournament_size = tournament_size;
+    }
+
+    public int getPopulation_size() {
+        return population_vector.size();
+    }
+
+
+    public void setSeed(long seed)
+    {
+        // Set seed of algortihms random process
+        rnd_.setSeed(seed);
+    }
+
+
+
+
 }

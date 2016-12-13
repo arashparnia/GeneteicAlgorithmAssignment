@@ -4,11 +4,14 @@
 
 
 
+import com.sun.tools.javac.jvm.Gen;
 import org.vu.contest.ContestSubmission;
 import org.vu.contest.ContestEvaluation;
 
 import java.util.Random;
 import java.util.Properties;
+import java.util.Vector;
+import java.util.Iterator;
 
 public class player1 implements ContestSubmission
 {
@@ -55,38 +58,56 @@ public class player1 implements ContestSubmission
     {
         // Run your algorithm here
 
+
         int evals = 0;
 
         // init Population
         Population pop = new Population();
+
+        pop.setSeed(1);
+        evaluations_limit_ =20;
+
+
         // calculate fitness
-        while(evals < evaluations_limit_){
+        while(evals < evaluations_limit_ || evaluation_.getFinalResult() < 9  ){
+            int c = 1;
+            pop.setPopulation_vector(pop.selection_tournament(pop.getPopulation_vector(), true));
+            pop.setPopulation_vector(pop.crossover(pop.getPopulation_vector()));
+            pop.setPopulation_vector(pop.mutate(pop.getPopulation_vector()));
 
-            pop.mutate();
+            Genome[] population =  pop.getPopulation_array();
 
-            for (Genome g : pop.getPopulation_vector()){
-                if (!g.isEvaluated()) {
+            for (Genome g : population){
+
+                    System.out.println("GENE " + g.toString());
+
                     Double fittness = (double) evaluation_.evaluate(g.getGenome());
+                    System.out.println(c+" "  +fittness);
+                    c++;
                     g.setFitness(fittness);
                     g.setEvaluated(true);
                     evals++;
-                }
-                if (evaluation_.getFinalResult() > 9.9 || evals > evaluations_limit_) break;
+
+                if (evaluation_.getFinalResult() > 9 || evals > evaluations_limit_) break;
+            }
+
+            pop.setPopulation_array(population);
+
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("--------------------------------------------------------------------------");
+
+
+            System.out.println(" SIZE OF VECOTR " + pop.getPopulation_vector().size());
+            Iterator<Genome> itr = pop.getPopulation_vector().iterator();
+            while(itr.hasNext()){
+                System.out.println(itr.next().toString());
 
             }
-            pop.selection_tournament();
 
-            System.out.println(evals + " evaluation with  highest fittness at "+ pop.get_champion().getFitness() );
-//
-            // Select parents
-            // Apply crossover / mutation operators
-            //double child[] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-            // Check fitness of unknown fuction
-            //Double fitness = (double) evaluation_.evaluate(child);
-            //evals++;
-            // Select survivors
         }
-        System.out.println(evals + " population final result "+evaluation_.getFinalResult());
+        System.out.println(evals + " population final result " + evaluation_.getFinalResult());
     }
 }
 
