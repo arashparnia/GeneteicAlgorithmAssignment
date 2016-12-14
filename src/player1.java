@@ -8,10 +8,7 @@ import com.sun.tools.javac.jvm.Gen;
 import org.vu.contest.ContestSubmission;
 import org.vu.contest.ContestEvaluation;
 
-import java.util.Random;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.Iterator;
+import java.util.*;
 
 public class player1 implements ContestSubmission
 {
@@ -72,12 +69,12 @@ public class player1 implements ContestSubmission
         while(evals < evaluations_limit_ || evaluation_.getFinalResult() < 9  ){
             int c = 1;
 //            pop.selection_tournament();
-//            pop.mutate();
+            pop.mutate();
 
             Vector<Genome> population =  new Vector<Genome>();
-            population.addAll(pop.getPopulation_vector());
+            population.addAll((Collection<? extends Genome>) pop.getPopulation_vector().clone());
 
-            if (evaluation_.getFinalResult() > 9.9 || evals > evaluations_limit_) break;
+            if (evaluation_.getFinalResult() > 9.9 || evals > evaluations_limit_-GAParam.population_size) break;
             for (int i = 0 ;i < 10;i++) {
                 Genome g  = population.elementAt(i);
 
@@ -90,7 +87,7 @@ public class player1 implements ContestSubmission
                 g.setEvaluated(true);
                 evals++;
 
-//
+
             }
 
             System.out.println("--------------------------------------------------------------------------");
