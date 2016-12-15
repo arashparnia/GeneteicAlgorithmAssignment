@@ -66,7 +66,7 @@ public class player1 implements ContestSubmission
 
 
         // calculate fitness
-        while(evals < evaluations_limit_ || evaluation_.getFinalResult() < 9  ){
+        while(evals < evaluations_limit_ || evaluation_.getFinalResult() < 9.9  ){
             int c = 1;
 //            pop.selection_tournament();
             pop.mutate();

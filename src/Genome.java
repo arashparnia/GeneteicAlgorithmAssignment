@@ -119,7 +119,10 @@ public class Genome implements Comparable<Genome> , GAParam{
         for (int index = 0 ; index <GAParam.genome_size ; index++) {
             if (Math.abs(rnd_.nextDouble()) < mutation_probability_genome ) {
                 double actual_mutation_value =  rnd_.nextDouble() *  (mutation_rate);
+                if (rnd_.nextBoolean())
                 this.setGene(index, this.getGene(index)  + actual_mutation_value);
+                else
+                    this.setGene(index, this.getGene(index)  - actual_mutation_value);
                 this.setEvaluated(false);
 
             }
